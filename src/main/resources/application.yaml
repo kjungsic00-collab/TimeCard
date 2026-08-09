@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: TimeCard
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydb
+    username: ${DB_USERNAME}  # 인텔리제이 환경변수에서 불러옴
+    password: ${DB_PASSWORD}  # 인텔리제이 환경변수에서 불러옴
+
+  thymeleaf:
+    cache: false
+
+  # Gmail 발송
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_USER}   # 인텔리제이 환경변수에서 불러옴
+    password: ${GMAIL_PASS}   # 인텔리제이 환경변수에서 불러옴
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+  type-aliases-package: com.example.timecard.domain
