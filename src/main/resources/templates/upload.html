@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>근태 데이터 엑셀 업로드</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">출근부 엑셀 파일 업로드</h5>
+                </div>
+                <div class="card-body">
+                    <!-- /up 경로로 multipart/form-data 전송 -->
+                    <form action="/up" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="file" class="form-label">엑셀 파일 선택 (.xlsx)</label>
+                            <input type="file" class="form-control" id="file" name="file" accept=".xlsx, .xls" required>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="/" class="btn btn-secondary">목록으로</a>
+                            <button type="submit" class="btn btn-success">업로드 실행</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

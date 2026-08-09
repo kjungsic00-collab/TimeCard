@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>출근부 조회</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- 인쇄 전용 스타일 설정 -->
+    <style>
+        @media print {
+            /* 1. 화면 전체 요소 숨김 */
+            body * {
+                visibility: hidden;
+            }
+
+            /* 2. 인쇄할 영역(#printArea)과 하위 요소만 표시 */
+            #printArea, #printArea * {
+                visibility: visible;
+            }
+
+            /* 3. 인쇄 영역 위치 및 너비 조정 */
+            #printArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+
+            /* 4. 화면의 버튼, 검색창 등 인쇄 제외 처리 */
+            .no-print {
+                display: none !important;
+            }
+
+            /* 5. 배경색 및 이미지 스타일 보존 */
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container my-5">
+    <!-- 상단 헤더 및 인쇄 버튼 영역 (인쇄 시 숨겨짐) -->
+    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+        <h2 class="fw-bold m-0">📅 출근부 기간 조회</h2>
+        <button type="button" class="btn btn-dark fw-bold px-3" onclick="window.print()">
+            🖨️ 인쇄하기
+        </button>
+    </div>
+
+    <!-- 기간 검색 폼 (인쇄 시 숨겨짐) -->
+    <div class="card shadow-sm mb-4 no-print">
+        <div class="card-body">
+            <form action="/" method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="startDate" class="form-label fw-semibold">시작일</label>
+                    <input type="date" class="form-control" id="startDate" name="startDate"
+                           th:value="${startDate}" max="9999-12-31" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="endDate" class="form-label fw-semibold">종료일</label>
+                    <input type="date" class="form-control" id="endDate" name="endDate"
+                           th:value="${endDate}" max="9999-12-31" required>
+                </div>
+                <div class="col-md-4 d-grid">
+                    <button type="submit" class="btn btn-primary fw-bold">조회하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 출근부 결과 테이블 (인쇄 영역) -->
+    <div class="card shadow-sm" id="printArea">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-center">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>출근일자</th>
+                        <th>이름</th>
+                        <th>출근 시간</th>
+                        <th>퇴근 시간</th>
+                        <th>휴가 여부</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- 데이터가 있을 때 -->
+                    <tr th:each="item : ${attendanceList}">
+                        <td th:text="${item.checkDate}">2026-08-01</td>
+                        <td th:text="${item.memberName}">홍길동</td>
+                        <td th:text="${item.workInTime ?: '-'}">09:00</td>
+                        <td th:text="${item.workOutTime ?: '-'}">18:00</td>
+                        <td>
+                            <div class="d-flex align-items-center justify-content-center gap-2">
+                                <span th:if="${item.vacationYn == 'Y'}" class="badge bg-warning text-dark">휴가</span>
+                                <span th:if="${item.vacationYn == 'N'}" class="badge bg-success">근무</span>
+
+                                <!-- Y일 때만 서명 이미지 2개 나란히 표시 -->
+                                <div th:if="${item.vacationYn == 'Y'}" class="d-inline-flex gap-1 align-items-center">
+                                    <img th:src="@{/images/01.bmp}" alt="사인1" style="height: 25px; width: auto;">
+                                    <img th:src="@{/images/02.bmp}" alt="사인2" style="height: 25px; width: auto;">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- 데이터가 없을 때 -->
+                    <tr th:if="${#lists.isEmpty(attendanceList)}">
+                        <td colspan="5" class="text-center text-muted py-4">
+                            해당 기간의 출근 기록이 없습니다.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"></script>
+</body>
+</html>

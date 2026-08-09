@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.timecard.mapper.ListMapper">
+    <select id="findByPeriod">
+        SELECT
+        id,
+        member_name,
+        check_date,
+        work_in_time,
+        vacation_yn,
+        CASE
+        /* 오늘 날짜이고, 퇴근 시간이 없거나(공백 포함) 현재 시각보다 미래인 경우 '-' 처리 */
+        WHEN check_date = CURRENT_DATE AND (
+        work_out_time IS NULL
+        OR TRIM(work_out_time) = ''
+        OR (check_date + work_out_time::TIME) > LOCALTIMESTAMP
+        ) THEN '-'
+        /* 그 외(과거 날짜이거나 정상 완료된 퇴근 시간)는 그대로 표시 */
+        ELSE work_out_time
+        END AS work_out_time
+        FROM attendance
+        WHERE check_date BETWEEN #{startDate}::DATE AND #{endDate}::DATE
+        AND check_date &lt;= CURRENT_DATE
+        ORDER BY check_date ASC, member_name ASC
+    </select>
+
+    <insert id="insert">
+        INSERT INTO attendance (
+        member_name,
+        check_date,
+        work_in_time,
+        work_out_time,
+        vacation_yn
+        ) VALUES (
+        #{memberName},
+        #{checkDate}::DATE,
+        #{workInTime},
+        #{workOutTime},
+        COALESCE(NULLIF(#{vacationYn}, ''), 'N')
+        )
+    </insert>
+</mapper>
